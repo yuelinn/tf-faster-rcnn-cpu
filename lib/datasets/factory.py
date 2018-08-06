@@ -27,6 +27,29 @@ for year in ['2007', '2012']:
     name = 'voc_{}_{}_diff'.format(year, split)
     __sets[name] = (lambda split=split, year=year: pascal_voc(split, year, use_diff=True))
 
+# Add modified datasets
+for year in ['2007']:
+  for split in ['trainval_excludeTvmonitor', 'test_excludeTvmonitor']:
+    name = 'voc_{}_{}'.format(year, split)
+    __sets[name] = (lambda split=split, year=year: pascal_voc(split, year, 
+      classes=['__background__',  # always index 0
+                     'aeroplane', 'bicycle', 'bird', 'boat',
+                     'bottle', 'bus', 'car', 'cat', 'chair',
+                     'cow', 'diningtable', 'dog', 'horse',
+                     'motorbike', 'person', 'pottedplant',
+                     'sheep', 'sofa', 'train']))
+
+for year in ['2007']:
+  for split in ['trainval_excludeTvmonitor', 'test_excludeTvmonitor']:
+    name = 'voc_{}_{}_diff'.format(year, split)
+    __sets[name] = (lambda split=split, year=year: pascal_voc(split, year, use_diff=True, 
+      classes=['__background__',  # always index 0
+                     'aeroplane', 'bicycle', 'bird', 'boat',
+                     'bottle', 'bus', 'car', 'cat', 'chair',
+                     'cow', 'diningtable', 'dog', 'horse',
+                     'motorbike', 'person', 'pottedplant',
+                     'sheep', 'sofa', 'train']))
+
 # Set up coco_2014_<split>
 for year in ['2014']:
   for split in ['train', 'val', 'minival', 'valminusminival', 'trainval']:

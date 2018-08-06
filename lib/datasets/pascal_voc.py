@@ -24,7 +24,7 @@ from model.config import cfg
 
 
 class pascal_voc(imdb):
-  def __init__(self, image_set, year, use_diff=False):
+  def __init__(self, image_set, year, use_diff=False, classes=None):
     name = 'voc_' + year + '_' + image_set
     if use_diff:
       name += '_diff'
@@ -33,13 +33,20 @@ class pascal_voc(imdb):
     self._image_set = image_set
     self._devkit_path = self._get_default_path()
     self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
-    self._classes = ('__background__',  # always index 0
-                     'aeroplane', 'bicycle', 'bird', 'boat',
-                     'bottle', 'bus', 'car', 'cat', 'chair',
-                     'cow', 'diningtable', 'dog', 'horse',
-                     'motorbike', 'person', 'pottedplant',
-                     'sheep', 'sofa', 'train', 'tvmonitor')
+    
+    if classes is None:   # default - 20 classes
+      self._classes = ('__background__',  # always index 0
+                       'aeroplane', 'bicycle', 'bird', 'boat',
+                       'bottle', 'bus', 'car', 'cat', 'chair',
+                       'cow', 'diningtable', 'dog', 'horse',
+                       'motorbike', 'person', 'pottedplant',
+                       'sheep', 'sofa', 'train', 'tvmonitor')
+    else:                 # customized classes (for example, excluding 'tvmonitor')
+      self._classes = tuple(classes)
     self._class_to_ind = dict(list(zip(self.classes, list(range(self.num_classes)))))
+    print('list of classes: ', self._classes)
+    print('num of classes: ', self.num_classes)
+
     self._image_ext = '.jpg'
     self._image_index = self._load_image_set_index()
     # Default to roidb handler
@@ -170,7 +177,13 @@ class pascal_voc(imdb):
       y1 = float(bbox.find('ymin').text) - 1
       x2 = float(bbox.find('xmax').text) - 1
       y2 = float(bbox.find('ymax').text) - 1
-      cls = self._class_to_ind[obj.find('name').text.lower().strip()]
+
+      # filter out objects which are not in the label list (excluded)
+      cls_name = obj.find('name').text.lower().strip()
+      if cls_name not in self._classes:
+        print('Filtered object at image-', index)
+        continue
+      cls = self._class_to_ind[cls_name]
       boxes[ix, :] = [x1, y1, x2, y2]
       gt_classes[ix] = cls
       overlaps[ix, cls] = 1.0
