@@ -170,6 +170,7 @@ class pascal_voc(imdb):
     seg_areas = np.zeros((num_objs), dtype=np.float32)
 
     # Load object bounding boxes into a data frame.
+    inds = []
     for ix, obj in enumerate(objs):
       bbox = obj.find('bndbox')
       # Make pixel indexes 0-based
@@ -183,11 +184,18 @@ class pascal_voc(imdb):
       if cls_name not in self._classes:
         print('Filtered object at image-', index)
         continue
+      inds.append(ix)
       cls = self._class_to_ind[cls_name]
       boxes[ix, :] = [x1, y1, x2, y2]
       gt_classes[ix] = cls
       overlaps[ix, cls] = 1.0
       seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
+
+    # filter out excluded objects
+    boxes = boxes[inds,:]
+    gt_classes = gt_classes[inds]
+    overlaps = overlaps[inds,:]
+    seg_areas = seg_areas[inds]
 
     overlaps = scipy.sparse.csr_matrix(overlaps)
 
