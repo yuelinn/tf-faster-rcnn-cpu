@@ -13,6 +13,7 @@ from __future__ import print_function
 __sets = {}
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
+from datasets.oppd import oppd
 
 import numpy as np
 
@@ -60,8 +61,18 @@ for year in ['2014']:
 for year in ['2015']:
   for split in ['test', 'test-dev']:
     name = 'coco_{}_{}'.format(year, split)
-    __sets[name] = (lambda split=split, year=year: coco(split, year))
+    __sets[name] = (lambda split=split, year=year: pascal_voc(split, year, use_diff=True, 
+      classes=['__background__',  # always index 0
+                     'aeroplane', 'bicycle', 'bird', 'boat',
+                     'bottle', 'bus', 'car', 'cat', 'chair',
+                     'cow', 'diningtable', 'dog', 'horse',
+                     'motorbike', 'person', 'pottedplant',
+                     'sheep', 'sofa', 'train']))
 
+# for OPPD 2020
+for split in ['test', 'train']:
+  name = 'oppd_frag_{}'.format(split)
+  __sets[name]= (lambda split=split: oppd(split) )
 
 def get_imdb(name):
   """Get an imdb (image database) by name."""

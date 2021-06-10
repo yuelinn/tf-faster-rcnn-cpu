@@ -17,6 +17,7 @@ from model.config import cfg
 from roi_data_layer.minibatch import get_minibatch
 import numpy as np
 import time
+import pdb
 
 class RoIDataLayer(object):
   """Fast R-CNN data layer used for training."""
@@ -53,8 +54,11 @@ class RoIDataLayer(object):
       row_perm = np.random.permutation(np.arange(inds.shape[0]))
       inds = np.reshape(inds[row_perm, :], (-1,))
       self._perm = inds
+      print("ASPECT_GROUPING set to True")
     else:
+      print("ASPECT_GROUPING set to False")
       self._perm = np.random.permutation(np.arange(len(self._roidb)))
+      
     # Restore the random state
     if self._random:
       np.random.set_state(st0)
@@ -64,7 +68,8 @@ class RoIDataLayer(object):
   def _get_next_minibatch_inds(self):
     """Return the roidb indices for the next minibatch."""
     
-    if self._cur + cfg.TRAIN.IMS_PER_BATCH >= len(self._roidb):
+    while self._cur + cfg.TRAIN.IMS_PER_BATCH >= len(self._roidb):
+      print("reached end of roidb, reshuffling start point")
       self._shuffle_roidb_inds()
 
     db_inds = self._perm[self._cur:self._cur + cfg.TRAIN.IMS_PER_BATCH]
@@ -80,6 +85,8 @@ class RoIDataLayer(object):
     """
     db_inds = self._get_next_minibatch_inds()
     minibatch_db = [self._roidb[i] for i in db_inds]
+    if len(minibatch_db) ==0:
+      pdb.set_trace()
     return get_minibatch(minibatch_db, self._num_classes)
       
   def forward(self):

@@ -20,6 +20,7 @@ import os
 import sys
 import glob
 import time
+import pdb
 
 import tensorflow as tf
 from tensorflow.python import pywrap_tensorflow
@@ -325,8 +326,10 @@ def get_training_roidb(imdb):
   """Returns a roidb (Region of Interest database) for use in training."""
   if cfg.TRAIN.USE_FLIPPED:
     print('Appending horizontally-flipped training examples...')
-    imdb.append_flipped_images()
-    print('done')
+    # imdb.append_flipped_images()
+    # print('done')
+    # FIXME
+    print('cannot flip rn....')
 
   print('Preparing training data...')
   rdl_roidb.prepare_roidb(imdb)
