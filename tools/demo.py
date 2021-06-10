@@ -30,15 +30,26 @@ import argparse
 from nets.vgg16 import vgg16
 from nets.resnet_v1 import resnetv1
 
-CLASSES = ('__background__',
-           'aeroplane', 'bicycle', 'bird', 'boat',
-           'bottle', 'bus', 'car', 'cat', 'chair',
-           'cow', 'diningtable', 'dog', 'horse',
-           'motorbike', 'person', 'pottedplant',
-           'sheep', 'sofa', 'train', 'tvmonitor')
+# CLASSES = ('__background__',
+#            'aeroplane', 'bicycle', 'bird', 'boat',
+#            'bottle', 'bus', 'car', 'cat', 'chair',
+#            'cow', 'diningtable', 'dog', 'horse',
+#            'motorbike', 'person', 'pottedplant',
+#            'sheep', 'sofa', 'train', 'tvmonitor')
 
-NETS = {'vgg16': ('vgg16_faster_rcnn_iter_70000.ckpt',),'res101': ('res101_faster_rcnn_iter_70000.ckpt',)}
-DATASETS= {'pascal_voc': ('voc_2007_trainval',),'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',)}
+CLASSES = ('__background__',
+            'ALOMY', 'ANGAR', 'APESV','ARTVU','AVEFA','BROST','BRSNN',
+            'CAPBP','CENCY','CHEAL','CHYSE','CIRAR','CONAR', 'EPHHE',
+            'EPHPE', 'EROCI', 'FUMOF','GALAP', 'GERMO', 'LAPCO','LOLMU',
+            'LYCAR', 'MATCH', 'MATIN', 'MELNO', 'MYOAR', 'PAPRH', 'PLALA', 
+            'PLAMA', 'POAAN','POLAV','POLCO','POLLA','POLPE','RUMCR',
+            'SENVU','SINAR','SOLNI','SONAS','SONOL','STEME','THLAR',
+            'URTUR','VERAR','VERPE','VICHI','VIOAR','PPPMM', 'PPPDD', 'other')
+
+# NETS = {'vgg16': ('vgg16_faster_rcnn_iter_110000.ckpt',)}
+NETS = {'vgg16': ('vgg16_faster_rcnn_iter_3258.ckpt',)}
+
+DATASETS= {'oppd_frag': ('oppd_frag_train',), 'pascal_voc': ('voc_2007_trainval',),'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',)}
 
 def vis_detections(im, class_name, dets, thresh=0.5):
     """Draw detected bounding boxes."""
@@ -138,18 +149,24 @@ if __name__ == '__main__':
         net = resnetv1(num_layers=101)
     else:
         raise NotImplementedError
-    net.create_architecture("TEST", 21,
+    # net.create_architecture("TEST", 21,
+    #                       tag='default', anchor_scales=[8, 16, 32])
+
+    net.create_architecture("TEST", 51,
                           tag='default', anchor_scales=[8, 16, 32])
     saver = tf.train.Saver()
     saver.restore(sess, tfmodel)
 
     print('Loaded network {:s}'.format(tfmodel))
 
-    im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
-                '001763.jpg', '004545.jpg']
+    # im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
+    #             '001763.jpg', '004545.jpg']
+
+    im_names=['0a9439b9-69cb-4e71-bce8-08e2c2a965e4.jpg', 'T02_Box016_2017-10-16T08-44-58-936.jpg', 'T01_Box048_2017-06-14T11-22-42-768.jpg', 'fat_hen.jpg', 'fat-hen-plants-nigel-cattlin.jpg']
     for im_name in im_names:
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('Demo for data/demo/{}'.format(im_name))
         demo(sess, net, im_name)
+        
 
     plt.show()
